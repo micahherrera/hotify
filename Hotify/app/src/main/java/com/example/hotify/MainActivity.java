@@ -26,14 +26,14 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("SONG", "onClick: stop pressed");
             }
         });
-        int resID=getResources().getIdentifier("ftwt7am", "raw", getPackageName());
-        mMediaPlayer = MediaPlayer.create(this,resID);
+
 
         Button playButton = (Button)findViewById(R.id.play);
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mMediaPlayer.start();
+                Intent startServiceIntent = new Intent(MainActivity.this, SongService.class);
+                startService(startServiceIntent);
             }
         });
 
