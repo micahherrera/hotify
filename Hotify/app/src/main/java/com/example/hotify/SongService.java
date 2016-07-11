@@ -11,7 +11,9 @@ import android.util.Log;
  * Created by aaronfields on 7/11/16.
  */
 public class SongService extends Service {
-    MediaPlayer mMediaPlayer;
+
+    Thread mThread;
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -27,15 +29,39 @@ public class SongService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d("SongService", "Starting Service!");
-        int resID=getResources().getIdentifier("ftwt7am", "raw", getPackageName());
-        mMediaPlayer = MediaPlayer.create(this,resID);
-        mMediaPlayer.start();
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                int resID=getResources().getIdentifier("ftwt7am", "raw", getPackageName());
+                MainActivity.mMediaPlayer = MediaPlayer.create(getBaseContext(),resID);
+                MainActivity.mMediaPlayer.start();
+
+                //stop and calls ondestroy
+                //stopSelf();
+            }
+        };
+
+        mThread = new Thread(r);
+        mThread.start();
+
+
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Log.d("SongService", "Destroyed!");
+        Log.d("SongService", "Destroyed and paused!");
+        mThread.interrupt();
+        MainActivity.mMediaPlayer.stop();
+        stopSelf();
+
+    }
+
+
+
+    public SongService() {
+        super();
     }
 }
